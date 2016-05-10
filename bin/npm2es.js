@@ -142,6 +142,7 @@ function beginFollowing() {
     } else {
 
       var p = normalize(change.doc);
+      p = postNormalize(p);
 
       if (!p || !p.name) {
         console.log('SKIP: ' + change.doc._id);
@@ -185,6 +186,27 @@ function beginFollowing() {
       });
     }
   });
+}
+
+// fixes the npm-normalize format to work with elasticsearch's requirements
+function postNormalize(obj) {
+  var _dots = function(o) {
+    var out = [];
+    Object.keys(o).forEach(function(key) {
+      out.push({
+        version: key,
+        time: o[key]
+      });
+    });
+    return out;
+  };
+  if (obj.time) {
+    obj.time = _dots(obj.time);
+  }
+  if (obj.times) {
+    obj.times = _dots(obj.times);
+  }
+  return obj;
 }
 
 function createIndexIfDoesNotExist(callback) {
