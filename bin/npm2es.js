@@ -142,12 +142,13 @@ function beginFollowing() {
     } else {
 
       var p = normalize(change.doc);
-      p = postNormalize(p);
 
       if (!p || !p.name) {
         console.log('SKIP: ' + change.doc._id);
         return;
       }
+
+      p = postNormalize(p);
 
       this.pause();
       request.get({
