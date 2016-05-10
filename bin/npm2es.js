@@ -8,8 +8,6 @@ if (!argv.couch || !argv.es) {
 var follow = require('follow'),
     normalize = require('npm-normalize'),
     request = require('request'),
-    fs = require('fs'),
-    path = require('path'),
     extend = require('extend'),
     since = argv.since,
     interval = argv.interval || 1000,
@@ -61,18 +59,18 @@ function beginFollowing() {
     json: true
   }, function(e, r, o) {
     var nameObj = {
-      type: "multi_field",
+      type: 'multi_field',
       fields : {
-        name : { type : "string", index : "analyzed" },
-        untouched : { type : "string", index : "not_analyzed" }
+        name : { type : 'string', index : 'analyzed' },
+        untouched : { type : 'string', index : 'not_analyzed' }
       }
     };
 
     if (!e && !o.error && o.properties) {
-      o['package'].properies.name = nameObj
+      o['package'].properies.name = nameObj;
     } else {
       o = {
-        "package" : {
+        package : {
           properties : {
             name: nameObj
           }
@@ -83,7 +81,7 @@ function beginFollowing() {
     request.put({
       url : argv.es + '/package/_mapping',
       json : o
-    }, function() {})
+    }, function() {});
 
   });
 
@@ -130,7 +128,7 @@ function beginFollowing() {
 
     // Remove the document from elasticsearch
     if (change.deleted) {
-      this.pause()
+      this.pause();
       request.del(argv.es + '/package/' + change.id, function(err) {
         if (!err) {
           console.log('DELETED', change.id);
